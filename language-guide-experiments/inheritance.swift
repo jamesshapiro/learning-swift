@@ -31,5 +31,13 @@ let thirdGen = HeirOfAnHeir()
 // prints $3MM
 print(thirdGen.bankBalance)
 
+class NoisyHeir: Heir {
+    override func makeNoise() {
+        print("NOISE!")
+    }
+}
+
+let noisyHeir = NoisyHeir()
+noisyHeir.makeNoise()
 
 
