@@ -40,4 +40,30 @@ class NoisyHeir: Heir {
 let noisyHeir = NoisyHeir()
 noisyHeir.makeNoise()
 
+class FirstBornHeir: Ancestor {
+    var title = "Duke"
+    override var description: String {
+        return super.description + ". Title: \(title)"
+    }
+}
+
+let firstBornHeir = FirstBornHeir()
+firstBornHeir.bankBalance = 6_000_000
+firstBornHeir.title = "Prince"
+print("FirstBornHeir: \(firstBornHeir.description)")
+
+class FirstBornHeirOfAnHeir: FirstBornHeir {
+    override var bankBalance: Int {
+        didSet {
+            print("Balance has been set")
+        }
+    }
+}
+
+let firstBornHeirOfAnHeir = FirstBornHeirOfAnHeir()
+firstBornHeirOfAnHeir.bankBalance = 20_000
+
+
+
+
 
