@@ -215,5 +215,136 @@ struct Vegetable {
 let someVegetable = Vegetable(species: "Taraxacum officinale")
 let nilVegetable = Vegetable(species: "")
 
+// Failable Initializers for Enumerations
+enum OffensivePlayer {
+    case offensiveLineman, quarterback, wideReceiver, runningBack, tightEnd
+    init?(abbreviation: String) {
+        switch abbreviation {
+        case "OL":
+            self = .offensiveLineman
+        case "QB":
+            self = .quarterback
+        case "WR":
+            self = .wideReceiver
+        case "RB":
+            self = .runningBack
+        case "TE":
+            self = .tightEnd
+        default:
+            return nil
+        }
+    }
+}
 
-    
+let runningBack = OffensivePlayer(abbreviation: "RB")
+if runningBack != nil {
+    print("RB is a valid abbreviation for an offensive player")
+}
+// invalid because cornerbacks play defense     
+let cornerback = OffensivePlayer(abbreviation: "CB")
+if cornerback == nil {
+    print("CB is not a valid abbreviation for an offensive player")
+}
+
+enum OffensivePosition: String {
+    case offensiveLineman = "OL", quarterback = "QB", wideReceiver = "WR",
+         runningBack = "RB", tightEnd = "TE"
+}
+
+let rb = OffensivePosition(rawValue: "RB")
+if runningBack != nil {
+    print("RB is a valid rawValue for an offensive position")
+}
+// invalid because cornerbacks play defense     
+let cb = OffensivePosition(rawValue: "CB")
+if cornerback == nil {
+    print("CB is not a valid abbreviation for an offensive position")
+}
+
+class Product {
+    let name: String
+    init?(name: String) {
+        if name.isEmpty { return nil }
+        self.name = name
+    }
+}
+
+class CartItem: Product {
+    let quantity: Int
+    init?(name: String, quantity: Int) {
+        if quantity < 1 { return nil }
+        self.quantity = quantity
+        super.init(name: name)
+    }
+}
+
+let cartItem1 = CartItem(name: "", quantity: 0)
+let cartItem2 = CartItem(name: "", quantity: 1)
+let cartItem3 = CartItem(name: "product", quantity: 0)
+let cartItem4 = CartItem(name: "product", quantity: 1)
+print(cartItem1 == nil)
+print(cartItem2 == nil)
+print(cartItem3 == nil)
+print(cartItem4 != nil)
+
+class Document {
+    var name: String?
+    init() {}
+    init?(name: String) {
+        if name.isEmpty { return nil }
+        self.name = name
+    }
+}
+
+class AutomaticallyNamedDocument: Document {
+    override init() {
+        super.init()
+        self.name = "[Untitled]"
+    }
+    override init(name: String) {
+        super.init()
+        if name.isEmpty {
+            self.name = "[Untitled]"
+        } else {
+            self.name = name
+        }
+    }
+}
+
+class UntitledDocument: Document {
+    override init() {
+        super.init(name: "[Untitled]")!
+    }
+}
+
+enum ChessboardColor {
+    case black, white
+}
+
+struct Chessboard {
+    let boardColors: [ChessboardColor] = {
+        var temporaryBoard = [ChessboardColor]()
+        var isBlack = false
+        for i in 1...8 {
+            for j in 1...8 {
+                isBlack ?
+                  temporaryBoard.append(ChessboardColor.black) :
+                  temporaryBoard.append(ChessboardColor.white)
+                isBlack = !isBlack
+            }
+            isBlack = !isBlack
+        }
+        return temporaryBoard
+    }()
+    func squareIsBlackAt(row: Int, column: Int) -> Bool {
+        return boardColors[(row * 8) + column] == ChessboardColor.black
+    }
+}
+let board = Chessboard()
+
+print(board.squareIsBlackAt(row: 0, column: 0) == false)
+print(board.squareIsBlackAt(row: 0, column: 1) == true)
+print(board.squareIsBlackAt(row: 1, column: 0) == true)
+print(board.squareIsBlackAt(row: 1, column: 1) == false)
+
+        
