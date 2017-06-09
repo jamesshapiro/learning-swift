@@ -124,3 +124,96 @@ class MultiplyWrapper: MultiplyRoot {
         }
     }
 }
+
+class Animal {
+    var numberOfLegs = 0
+    var description: String {
+        return "I am a \(numberOfLegs)-legged animal!"
+    }
+}
+
+let oyster = Animal()
+print("oyster: \(oyster.description)")
+
+class Elephant: Animal {
+    override init() {
+        super.init()
+        numberOfLegs = 4
+    }
+}
+
+let elephant = Elephant()
+print("elephant: \(elephant.description)")
+
+class Beverage {
+    var name: String
+    init(name: String) {
+        self.name = name
+    }
+    convenience init() {
+        self.init(name: "[Liquid]")
+    }
+}
+
+let namedAlcoholicBeverage = Beverage(name: "rum")
+let mysteryBeverage = Beverage()
+
+class MixedDrinkIngredient: Beverage {
+    var quantityInMilliliters: Int
+    init(name: String, quantity: Int) {
+        self.quantityInMilliliters = quantity
+        super.init(name: name)
+    }
+    override convenience init(name: String) {
+        self.init(name: name, quantity: 250)
+    }
+}
+
+/* Because it provides an implementation of all of its
+ superclass's designated initializers, MixedDrinkIngredient
+ inherits its superclass's convenience and designated 
+ initializers: */
+// Convenience
+let mysteryIngredient = MixedDrinkIngredient()
+print(mysteryIngredient.name,
+      mysteryIngredient.quantityInMilliliters)
+let tonicWater = MixedDrinkIngredient(name: "Tonic Water")
+let vodka = MixedDrinkIngredient(name: "Vodka", quantity: 150)
+
+class ShoppingListItem: MixedDrinkIngredient {
+    var purchased = false
+    var description: String {
+        var output = "\(quantityInMilliliters) x \(name)"
+        output += purchased ? "✔" : " ✘"
+        return output
+    }
+}
+/* Because it provides a default value for all of the
+ properties it introduces and does not define any 
+ initializers itself, ShoppingListItem automatically 
+ inherits all of the designated and convenience 
+ initializers from its superclass. */
+
+let items = [
+  ShoppingListItem(),
+  ShoppingListItem(name: "Tonic"),
+  // Note: terminal comma is not an issue
+  ShoppingListItem(name: "Vodka", quantity: 150),
+]
+for item in items {
+    print(item.description)
+}
+
+struct Vegetable {
+    let species: String
+    init?(species: String) {
+        if species.isEmpty { return nil }
+        self.species = species
+    }
+}
+
+let someVegetable = Vegetable(species: "Taraxacum officinale")
+let nilVegetable = Vegetable(species: "")
+
+
+    
