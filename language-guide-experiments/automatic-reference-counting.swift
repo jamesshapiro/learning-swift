@@ -108,3 +108,100 @@ bashaud = Customer(name: "Bashaud Breeland")
 bashaud!.card = CreditCard(number: 2626_2266_2222_6666, customer: bashaud!)
 
 bashaud = nil
+
+//Case 3: Neither property can be nil
+class Division {
+    let name: String
+    var bestTeam: Team!
+    init(name: String, bestTeamName: String) {
+        self.name = name
+        self.bestTeam = Team(name: bestTeamName, division: self)
+    }
+    deinit {
+        print("deinitializing: \(name)")
+    }
+}
+
+class Team {
+    let name: String
+    unowned let division: Division
+    init(name: String, division: Division) {
+        self.name = name
+        self.division = division
+    }
+    deinit {
+        print("deinitializing: \(name)")
+    }
+}
+
+var division = Division(name: "NFCWest", bestTeamName: "Seahawks")
+print("\(division.name)'s best team is called The \(division.bestTeam.name)")
+division.bestTeam = Team(name: "Cardinals", division: division)
+
+// ============================================================
+
+// Strong Reference Cycles for Closures:
+class HTMLElement {
+    let name: String
+    let text: String?
+
+    lazy var asHTML: () -> String = {
+        if let text = self.text {
+            return "<\(self.name)>\(text)</\(self.name)>"
+        } else {
+            return "<\(self.name) />"
+        }
+    }
+
+    init(name: String, text: String? = nil) {
+        self.name = name
+        self.text = text
+    }
+
+    deinit {
+        print("\(name) is being deinitialized")
+    }
+}
+
+let heading = HTMLElement(name: "h1")
+let defaultText = "some default text"
+heading.asHTML = {
+    return "<\(heading.name)>\(heading.text ?? defaultText)</\(heading.name)>"
+}
+// Prints "<h1>some default text</h1>"
+print(heading.asHTML())
+
+var httr: HTMLElement? = HTMLElement(name: "p", text: "Hail to the Redskins!")
+print(httr!.asHTML())
+// httr is not deinitialized:
+httr = nil
+
+class HTMLElement2 {
+    let name: String
+    let text: String?
+
+    lazy var asHTML: () -> String = {
+        [unowned self] in
+        if let text = self.text {
+            return "<\(self.name)>\(text)</\(self.name)>"
+        } else {
+            return "<\(self.name) />"
+        }
+    }
+
+    init(name: String, text: String? = nil) {
+        self.name = name
+        self.text = text
+    }
+
+    deinit {
+        print("\(name) is being deinitialized")
+    }
+}
+
+var httr2: HTMLElement2? = HTMLElement2(name: "p", text: "Hail to the Redskins!")
+// Prints "<p>Hail to the Redskins!</p>
+print(httr2!.asHTML())
+// Prints "p is being deinitialized"
+httr2 = nil
+    
