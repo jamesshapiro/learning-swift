@@ -20,9 +20,9 @@ struct Item {
 
 class VendingMachine {
   var inventory = [
-    "Candy Bar": Item(price: Bitcoin(amount: 0.000_05), count: 7),
-    "Dr Pepper": Item(price: Bitcoin(amount: 0.000_06), count: 4),
-    "Pretzels": Item(price: Bitcoin(amount: 0.000_03), count: 11)
+    "Candy Bar": Item(price: Bitcoin(amount: 0.000_5), count: 7),
+    "Dr Pepper": Item(price: Bitcoin(amount: 0.000_6), count: 4),
+    "Pretzels": Item(price: Bitcoin(amount: 0.000_3), count: 11)
   ]
   var bitcoinDeposited = Bitcoin(amount: 0)
 
@@ -105,11 +105,11 @@ amount: Bitcoin, person: String) throws {
 }
 // Prints: Invalid selection
 try testErrorConditions(vendingMachine: vendingMachine,
-                    amount: Bitcoin(amount: 0.000_01),
+                    amount: Bitcoin(amount: 0.000_1),
                     person: "Ziggy Hood")
 // Prints: Insufficient funds. Please insert an additional 5e-05 BTC.
 try testErrorConditions(vendingMachine: vendingMachine,
-                    amount: Bitcoin(amount: 0.000_01),
+                    amount: Bitcoin(amount: 0.000_1),
                     person: "Nate Sudfeld")
 /* Prints:
 Dispensing Dr Pepper
@@ -120,6 +120,6 @@ Out of Stock.
 */
 for _ in 1...5 {
     try testErrorConditions(vendingMachine: vendingMachine,
-                    amount: Bitcoin(amount: 0.000_06),
+                    amount: Bitcoin(amount: 0.000_6),
                     person: "Nate Sudfeld")
 }
