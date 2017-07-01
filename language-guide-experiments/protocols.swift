@@ -171,3 +171,156 @@ let game = FirstPersonToRollASixWins()
 game.delegate = tracker
 game.play()
 
+// Protocol Conformance via Extensions:
+// ====================================
+
+protocol TextRepresentable {
+    var textualDescription: String { get }
+}
+
+extension Dice: TextRepresentable {
+    var textualDescription: String {
+        return "A \(sides)-sided die"
+    }
+}
+
+let d100 = Dice(sides: 100, generator: KeepinItGenerator())
+print(d100.textualDescription)
+// Prints "A 100-sided die"
+
+extension FirstPersonToRollASixWins: TextRepresentable {
+    var textualDescription: String {
+        return "A game of First Person To Roll A Six Wins"
+    }
+}
+print(game.textualDescription)
+
+
+// Collections of Protocol Types:
+// ==============================
+
+struct Binturong {
+    var name: String
+    var textualDescription: String {
+        return "A binturong named \(name)"
+    }
+}
+extension Binturong: TextRepresentable {}
+let benjaminTheBinturong = Binturong(name: "Benjamin the Binturong")
+let somethingTextRepresentable: TextRepresentable = benjaminTheBinturong
+print(somethingTextRepresentable.textualDescription)
+// Prints "A binturong named Benjamin the Binturong"
+
+let things: [TextRepresentable] = [game, d100, benjaminTheBinturong]
+for thing in things {
+    print(thing.textualDescription)
+}
+
+// Protocol inheritance:
+// =====================
+
+protocol InheritingProtocol: ProtocolOne, FullyNamed {
+
+}
+
+protocol PrettyTextRepresentable: TextRepresentable {
+    var prettyTextualDescription: String { get }
+}
+
+extension Binturong: PrettyTextRepresentable {
+    var prettyTextualDescription: String {
+        var output = String(repeating: "*", count: 18 + 4 + self.name.characters.count)
+        output.append("\n* \(self.textualDescription) *\n")
+        output.append(String(repeating: "*", count: 18 + 4 + self.name.characters.count))
+        return output
+    }
+}
+
+print(benjaminTheBinturong.prettyTextualDescription)
+//Prints:
+// ********************************************
+// * A binturong named Benjamin The Binturong *
+// ********************************************
+
+let ty = Binturong(name: "Ty")
+print(ty.prettyTextualDescription)
+//Prints:
+// ************************
+// * A binturong named Ty *
+// ************************
+
+// Class-Only Protocols:
+// =====================
+protocol someClassOnlyProtocol: AnyObject, TextRepresentable {
+
+}
+// (only objects can conform to the AnyObject protocol)
+
+// Protocol Composition:
+// =====================
+protocol Named {
+    var name: String { get }
+}
+
+protocol Rostered {
+    var jerseyNumber: Int { get }
+}
+
+struct ProAthlete: Named, Rostered {
+    var name: String
+    var jerseyNumber: Int
+}
+
+func wishHappyBirthday(to celebrant: Named & Rostered) {
+    print("Happy birthday, \(celebrant.name), your jersey number is \(celebrant.jerseyNumber)!")
+}
+
+let birthdayPerson = ProAthlete(name: "Ryan Kerrigan", jerseyNumber: 91)
+wishHappyBirthday(to: birthdayPerson)
+// Prints: Happy birthday, Ryan Kerrigan, your jersey number is 91!
+
+// Inheriting from a class and protocol(s):
+// ========================================
+
+class Location {
+    var city: String
+    var state: String
+    init(city: String, state: String) {
+        self.city = city
+        self.state = state
+    }
+}
+
+class NonNomad: Location, Named {
+    var name: String
+    init(name: String, city: String, state: String) {
+        self.name = name
+        super.init(city: city, state: state)
+    }
+}
+
+/* Note: The tutorial says to write something like the following:
+func listLocationOf(_ person: Location & Named) {
+    print("Hello \(person.name)!")
+}
+
+let vernon = NonNomad(name: "Vernon Davis", city: "Washington", state: "DC")
+listLocationOf(vernon)
+
+HOWEVER, I keep seeing:
+  error: non-protocol type 'Location' cannot be used within a protocol composition
+I'm wondering if this was something introduced in Swift 4, or if I'm missing something...
+*/
+
+// Checking for Protocol Conformance:
+// ==================================
+
+protocol HasArea {
+    var area: Double { get }
+}
+
+class Circle: HasArea {
+    let pi = Double.pi
+    var radius: Double
+    var area: Double { return pi * radius * radius }
+}
