@@ -323,4 +323,156 @@ class Circle: HasArea {
     let pi = Double.pi
     var radius: Double
     var area: Double { return pi * radius * radius }
+    init(radius: Double) { self.radius = radius }
 }
+
+class Country: HasArea {
+    var area: Double
+    init(area: Double) { self.area = area }
+}
+
+class FootballPlayer {
+    var yards: Int
+    init(yards: Int) { self.yards = yards }
+}
+
+let objects: [AnyObject] = [
+  Circle(radius: 10.0),
+  Country(area: 3_797_000),
+  FootballPlayer(yards: 15_000)
+]
+
+for object in objects {
+    if let objectWithArea = object as? HasArea {
+        print("Area is \(objectWithArea.area)")
+    } else {
+        print("Something that doesn't have an area")
+    }
+}
+
+// Area is 314.159265358979
+// Area is 3797000.0
+// Something that doesn't have an area
+
+// Optional Protocol Requirements:
+// ===============================
+
+// For the purpose of compatability with Objective-C
+
+@objc protocol CounterDataSource {
+    @objc optional func increment(forCount count: Int) -> Int
+    @objc optional var fixedIncrement: Int { get }
+}
+
+class Counter {
+    var count = 0
+    var dataSource: CounterDataSource?
+    func increment() {
+        if let amount = dataSource?.increment?(forCount: count) {
+            count += amount
+        } else if let amount = dataSource?.fixedIncrement {
+            count += amount
+        }
+    }
+}
+
+class FixedIncrement: NSObject, CounterDataSource {
+    let fixedIncrement: Int
+    init(amount: Int) {
+        fixedIncrement = amount
+    }
+}
+
+var counter = Counter()
+counter.dataSource = FixedIncrement(amount: 7)
+for _ in 1...7 {
+    counter.increment()
+    print(counter.count)
+}
+
+// 7
+// 14
+// 21
+// 28
+// 35
+// 42
+// 49
+
+class ZeroMagnet: NSObject, CounterDataSource {
+    func increment(forCount count: Int) -> Int {
+        if count == 0 {
+            print("The time has come!")
+            return 0
+        } else if count < 0 {
+            return 1
+        } else {
+            return -1
+        }
+    }
+}
+
+counter.count = -4
+counter.dataSource = ZeroMagnet()
+for _ in 1...6 {
+    counter.increment()
+    print(counter.count)
+}
+
+// -3
+// -2
+// -1
+// 0
+// The time has come!
+// 0
+// The time has come!
+// 0
+
+// Protocol Extensions:
+// ====================
+
+extension RandomNumberGenerator {
+    func randomBool() -> Bool {
+        let randomValue = random()
+        return randomValue >= 0.25 && randomValue < 0.75
+    }
+}
+
+let anotherGenerator = KeepinItGenerator()
+print("Here's a random number: \(anotherGenerator.random())")
+// Prints "Here's a random number: 0.04"
+print("And here's a random Boolean: \(anotherGenerator.randomBool())")
+// Prints "And here's a random Boolean: true"
+
+// Providing Default Implementations:
+// If the conforming type provides its own implementation,
+// it will override this default implementation
+extension PrettyTextRepresentable  {
+    var prettyTextualDescription: String {
+        return textualDescription
+    }
+}
+
+let max = Binturong(name: "Max")
+print(max.prettyTextualDescription)
+// Prints: 
+// *************************
+// * A binturong named Max *
+// *************************
+// despite the default
+
+// Addings constraints to Protocol Extensions
+
+extension Collection where Iterator.Element: TextRepresentable {
+    var textualDescription: String {
+        let itemsAsText = self.map { $0.textualDescription }
+        return "[" + itemsAsText.joined(separator: ", ") + "]"
+    }
+}
+
+let kirkTheBinturong = Binturong(name: "Kirk")
+let coltTheBinturong = Binturong(name: "Colt")
+let nateTheBinturong = Binturong(name: "Nate")
+let binturongs = [kirkTheBinturong, coltTheBinturong, nateTheBinturong]
+
+print(binturongs.textualDescription)
+// [A binturong named Kirk, A binturong named Colt, A binturong named Nate]
