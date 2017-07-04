@@ -25,7 +25,7 @@ var pickSix = "Safety"
 swap(&safety, &pickSix)
 print("safety: \(safety), pickSix: \(pickSix)")
 
-struct IntStack {
+/*struct IntStack {
     var items = [Int]()
     mutating func push(_ item: Int) {
         items.append(item)
@@ -33,7 +33,7 @@ struct IntStack {
     mutating func pop() -> Int {
         return items.removeLast()
     }
-}
+}*/
 
 struct Stack<Element> {
     var items = [Element]()
@@ -124,7 +124,7 @@ protocol Container {
 // by looking at the argument to append
 */
 
-struct intStack: Container {
+struct IntStack: Container {
     var items = [Int]()
     mutating func push(_ item: Int) {
         items.append(item)
@@ -142,3 +142,84 @@ struct intStack: Container {
         return items[i]
     }
 }
+
+func allItemsMatch<C1: Container, C2: Container>
+(_ someContainer: C1, _ anotherContainer: C2) -> Bool
+  where C1.Item == C2.Item, C1.Item: Equatable {
+    if someContainer.count != anotherContainer.count {
+        return false
+    }
+        
+    for i in 0..<someContainer.count {
+        if someContainer[i] != anotherContainer[i] {
+            return false
+        }
+    }
+    return true
+}
+
+extension Array: Container {}
+
+var intStack = IntStack()
+intStack.push(100)
+intStack.push(99)
+intStack.push(98)
+
+let intArray = [100, 99, 98]
+
+print("All Items Match: \(allItemsMatch(intStack, intArray))")
+
+extension Stack where Element: Equatable {
+    func isTop(_ item: Element) -> Bool {
+        guard let topItem = self.peek() else {
+            return false
+        }
+        return topItem == item
+    }
+}
+
+var stack = Stack<Int>()
+stack.push(100)
+stack.push(99)
+stack.push(98)
+    
+if stack.isTop(98) {
+    print("Top element is 98")
+} else {
+    print("Top element is something else")
+}
+
+extension Container where Item: Equatable {
+    func startsWith(_ item: Item) -> Bool {
+        return count > 0 && self[0] == item
+    }
+}
+
+extension Container where Item == Int {
+    func median() -> Double? {
+        if count == 0 { return nil }
+        if count % 2 == 1 { return Double(self[count/2]) }
+        let leftMed = self[(count - 1)/2]
+        let rightMed = self[count/2]
+        return Double(leftMed + rightMed) / 2.0
+    }
+}
+
+let arr1 = [1, 1, 2]
+print("Median of [1, 1, 2] = \(arr1.median()!)")
+
+let arr2 = [1, 1, 2, 2]
+print("Median of [1, 1, 2, 2] = \(arr2.median()!)")
+
+/*    
+extension Container {
+    subscript<Indices: Sequence>(indices: Indices) -> [Item]
+      where Indices.Iterator.Element == Int {
+        var result = [Item]()
+        for index in indices {
+            result.append(self[index])
+        }
+        return result
+    }
+}*/
+
